@@ -20,15 +20,6 @@ fn get_attribute_type_size(v: &AttributeType) -> usize {
         AttributeType::ST => 2 * std::mem::size_of::<f32>(),
     }
 }
-/*
-fn get_vertex_type_type(v: &AttributeType) -> usize {
-    match v {
-        AttributeType::Position3D(data) => std::mem::size_of::<f32_f32_f32>(),
-        AttributeType::Color(data) => std::mem::size_of::<f32_f32_f32>(),
-        AttributeType::Normal3D(data) => std::mem::size_of::<f32_f32_f32>(),
-    }
-}
-*/
 fn get_attribute_type_num_components(v: &AttributeType) -> usize {
     match v {
         AttributeType::Position2D => 2,
@@ -93,7 +84,6 @@ pub struct Vertex {
     pub vertex_array: VertexArray,
     pub vertices: Vec<f32>,
     pub indices: Vec<i32>,
-    bound: bool,
 }
 
 impl Vertex {
@@ -109,14 +99,13 @@ impl Vertex {
             vertex_array,
             vertices,
             indices,
-            bound: false,
         }
     }
-    pub fn buffer_data(&mut self) {
+    pub fn buffer_data(&self) {
         self.vertex_buffer.buffer_data(&self.vertices);
         self.index_buffer.buffer_data(&self.indices);
     }
-    pub fn set_attrib_pointers(&mut self) {
+    pub fn set_attrib_pointers(&self) {
         self.vertex_buffer.bind();
         self.vertex_array.bind();
         for i in 0..self.vertex_layout.types.len() {
@@ -139,19 +128,17 @@ impl Vertex {
     pub fn get_num_vertices(&self) -> usize {
         self.vertices.len() / self.vertex_layout.get_num_components()
     }
-    pub fn bind(&mut self) {
-        self.bound = true;
+    pub fn bind(&self) {
         self.vertex_array.bind();
         self.vertex_buffer.bind();
         self.index_buffer.bind();
     }
-    pub fn unbind(&mut self) {
-        self.bound = false;
+    pub fn unbind(&self) {
         self.vertex_array.unbind();
         self.vertex_buffer.unbind();
         self.index_buffer.unbind();
     }
-    pub fn draw_call(&mut self) {
+    pub fn draw_call(&self) {
         self.vertex_array.bind();
         self.index_buffer.bind();
 
@@ -170,7 +157,6 @@ impl Drop for Vertex {
 #[derive(Debug)]
 pub struct VertexBuffer {
     vbo: gl::types::GLuint,
-    bound: bool,
 }
 
 impl VertexBuffer {
@@ -181,22 +167,19 @@ impl VertexBuffer {
         }
         VertexBuffer {
             vbo: vbo,
-            bound: false,
         }
     }
-    pub fn bind(&mut self) {
-        self.bound = true;
+    pub fn bind(&self) {
         unsafe {
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vbo);
         }
     }
-    pub fn unbind(&mut self) {
-        self.bound = false;
+    pub fn unbind(&self) {
         unsafe {
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
         }
     }
-    pub fn buffer_data(&mut self, data: &Vec<f32>) {
+    pub fn buffer_data(&self, data: &Vec<f32>) {
         self.bind();
         unsafe {
             gl::BufferData(
@@ -207,9 +190,6 @@ impl VertexBuffer {
             );
         }
         self.unbind();
-    }
-    pub fn is_bound(&self) -> bool {
-        self.bound
     }
 }
 
@@ -224,7 +204,6 @@ impl Drop for VertexBuffer {
 #[derive(Debug)]
 pub struct IndexBuffer {
     ibo: gl::types::GLuint,
-    bound: bool,
 }
 
 impl IndexBuffer {
@@ -236,22 +215,19 @@ impl IndexBuffer {
 
         IndexBuffer {
             ibo: ibo,
-            bound: false,
         }
     }
-    pub fn bind(&mut self) {
-        self.bound = true;
+    pub fn bind(&self) {
         unsafe {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ibo);
         }
     }
-    pub fn unbind(&mut self) {
-        self.bound = false;
+    pub fn unbind(&self) {
         unsafe {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
         }
     }
-    pub fn buffer_data(&mut self, data: &Vec<i32>) {
+    pub fn buffer_data(&self, data: &Vec<i32>) {
         self.bind();
         unsafe {
             gl::BufferData(
@@ -262,9 +238,6 @@ impl IndexBuffer {
             );
         }
         self.unbind();
-    }
-    pub fn is_bound(&self) -> bool {
-        self.bound
     }
 }
 
@@ -279,7 +252,6 @@ impl Drop for IndexBuffer {
 #[derive(Debug)]
 pub struct VertexArray {
     vao: gl::types::GLuint,
-    bound: bool,
 }
 
 impl VertexArray {
@@ -291,24 +263,18 @@ impl VertexArray {
 
         VertexArray {
             vao: vao,
-            bound: false,
         }
     }
 
-    pub fn bind(&mut self) {
-        self.bound = true;
+    pub fn bind(&self) {
         unsafe {
             gl::BindVertexArray(self.vao);
         }
     }
-    pub fn unbind(&mut self) {
-        self.bound = false;
+    pub fn unbind(&self) {
         unsafe {
             gl::BindVertexArray(0);
         }
-    }
-    pub fn is_bound(&self) -> bool {
-        self.bound
     }
 }
 impl Drop for VertexArray {

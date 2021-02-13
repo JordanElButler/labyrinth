@@ -27,7 +27,14 @@ pub fn load_assets(resources: &mut Resources) {
         let obj_program = Program::from_shaders(&obj_vert_shader, &obj_frag_shader).unwrap();
         resources.add_program_by_name("g_program", obj_program).unwrap();
     }
-    
+
+    {
+        let obj_vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/g_tex_vert.glsl").unwrap()).unwrap();
+        let obj_frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/g_tex_frag.glsl").unwrap()).unwrap();
+        let obj_program = Program::from_shaders(&obj_vert_shader, &obj_frag_shader).unwrap();
+        resources.add_program_by_name("g_tex_program", obj_program).unwrap();
+    }
+
     {
         let obj_vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/lightpass_vert.glsl").unwrap()).unwrap();
         let obj_frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/lightpass_frag.glsl").unwrap()).unwrap();

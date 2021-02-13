@@ -1,6 +1,7 @@
 
 use crate::transform::Transform;
-use crate::color::Color;
+use crate::math::Vector3f;
+
 
 pub enum LightType {
     PointLight,
@@ -10,20 +11,20 @@ pub enum LightType {
 pub struct Light {
     pub light_type: LightType,
     pub transform: Transform,
-    pub color: Color,
+    pub color: Vector3f,
     pub power: f32,
 }
 
 impl Light {
-    pub fn new_point_light(transform: Transform, color: Color, power: f32) -> Self {
+    pub fn new_point_light(transform: Transform, color: Vector3f, power: f32) -> Self {
         Light {
             light_type: LightType::PointLight,
             transform,
-            color: color,
-            power: power,
+            color,
+            power,
         }
     }
-    pub fn new_directional_light(transform: Transform, color: Color, power: f32) -> Self {
+    pub fn new_directional_light(transform: Transform, color: Vector3f, power: f32) -> Self {
         Light {
             light_type: LightType::DirectionalLight,
             transform,

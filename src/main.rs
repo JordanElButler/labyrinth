@@ -16,7 +16,6 @@ pub mod load_assets;
 pub mod light;
 pub mod framebuffer;
 pub mod material;
-pub mod color;
 
 
 use sdl2::pixels::Color;
@@ -56,7 +55,7 @@ pub fn main() {
     use math::{Vector3f, Vector2f};
     use crate::transform::{Transform};
     use render_object::{Scene, RenderObject};
-    use crate::material::Material;
+    use crate::material::*;
 
     let mut scene = Scene::new();
 
@@ -65,7 +64,7 @@ pub fn main() {
             let mut transform = Transform::identity();
             transform.translation.x = (x - 5) as f32;
             transform.translation.y = (y - 5) as f32;
-            transform.translation.z = 5 as f32;
+            transform.translation.z = 10 as f32;
 
             transform.scale.x = 0.5;
             transform.scale.y = 0.5;
@@ -79,10 +78,25 @@ pub fn main() {
                     Vector3f::new(1f32, 0f32, 0f32),
                     x as f32 / 10.0,
                     y as f32 / 10.0,
-                    0.2f32)));
+                    0.5f32)));
         }
     }
 
+
+    let mut transform = Transform::identity();
+    transform.translation.z = 5f32;
+    scene.add_object(RenderObject::new(
+        &resources,
+        transform,
+        "g_tex_program",
+        "lab",
+        Material {
+            albedo: Albedo(MaterialPropertyType::FromTexture(resources.get_texture_id_by_name("dumb").unwrap())),
+            normal: Normal(MaterialPropertyType::PerVertex),
+            metallic: Metallic(MaterialPropertyType::Constant(1f32)),
+            roughness: Roughness(MaterialPropertyType::Constant(0f32)),
+            ao: AO(MaterialPropertyType::Constant(1f32)),
+        }));
 
     use light::Light;
     for x in 0..2 {
@@ -188,16 +202,12 @@ pub fn main() {
             gl::ActiveTexture(gl::TEXTURE5);
             gl::BindTexture(gl::TEXTURE_2D, my_gb.get_ao().textureID);
             lightpass_program.set1i("tao", 5).unwrap();
-
-
-
             
               //camera pos
             lightpass_program.set3f("camPos", camera.transform.translation.x, camera.transform.translation.y, camera.transform.translation.z);
 
             // lights
             println!("{}", frames);
-            gl_util::gl_dump_errors();
 
             let lightPositions = [
                 -2f32, -2f32, 0f32, 
@@ -220,12 +230,12 @@ pub fn main() {
             lightpass_program.set3f("lightPositions[3]", lightPositions[ 3 * 3 + 0], lightPositions[ 3 * 3 + 1], lightPositions[ 3 * 3 + 2]);
             lightpass_program.set3f("lightColors[3]", lightColors[ 3 * 3 + 0], lightColors[ 3 * 3 + 1], lightColors[ 3 * 3 + 2]);
 
-
             quad_screen_mesh.draw();
             // post-processing pass
+              // tone-mapping
 
             // final pass
-  //*/
+            
         }
 
 

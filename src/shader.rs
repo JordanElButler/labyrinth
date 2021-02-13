@@ -131,7 +131,7 @@ impl Program {
             gl::UseProgram(self.id);
         }
     }
-    pub fn setMat4fv(&mut self, name: &str, data: *const f32) -> Option<()> {
+    pub fn setMat4fv(&self, name: &str, data: *const f32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {
@@ -143,7 +143,7 @@ impl Program {
         }
         Some(())
     }
-    pub fn set1i(&mut self, name: &str, data: i32) -> Option<()> {
+    pub fn set1i(&self, name: &str, data: i32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {
@@ -155,7 +155,7 @@ impl Program {
         }
         Some(())
     }
-    pub fn set1f(&mut self, name: &str, data: f32) -> Option<()> {
+    pub fn set1f(&self, name: &str, data: f32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {
@@ -167,7 +167,7 @@ impl Program {
         }
         Some(())
     }
-    pub fn set3f(&mut self, name: &str, x: f32, y: f32, z: f32) -> Option<()> {
+    pub fn set3f(&self, name: &str, x: f32, y: f32, z: f32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {
@@ -179,7 +179,7 @@ impl Program {
         }
         Some(())
     }
-    pub fn set4f(&mut self, name: &str, x: f32, y: f32, z: f32, w: f32) -> Option<()> {
+    pub fn set4f(&self, name: &str, x: f32, y: f32, z: f32, w: f32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {
@@ -191,7 +191,7 @@ impl Program {
         }
         Some(())
     }
-    pub fn set3fv(&mut self, name: &str, count: i32, data: &[f32]) -> Option<()> {
+    pub fn set3fv(&self, name: &str, count: i32, data: &[f32]) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
             if loc_u == -1 {

@@ -12,23 +12,29 @@ pub struct RenderObject {
     pub program_key: ResourceKey,
     pub mesh_key: ResourceKey,
     pub material: Material,
-    pub is_loaded: bool,
 }
 
 impl RenderObject {
-    pub fn new(res: &mut Resources, transform: Transform, program_name: &str, mesh_name: &str, material: Material) -> Self {
+    pub fn new(res: &Resources, transform: Transform, program_name: &str, mesh_name: &str, material: Material) -> Self {
 
         RenderObject {
             transform,
             program_key: res.get_program_id_by_name(program_name).unwrap(),
             mesh_key: res.get_mesh_id_by_name(mesh_name).unwrap(),
             material,
-            is_loaded: false,
         }
     }
-    pub fn draw(&mut self, res: &mut Resources, camera: &PerspectiveCamera) {
-        self.material.load_shader_data(res, self.program_key, &self.transform, &camera);
-        let mut mesh = res.get_mesh(self.mesh_key).unwrap();
+    pub fn draw(&self, res: &Resources, camera: &PerspectiveCamera) {
+        let program = res.get_program(self.program_key).unwrap();
+        program.set_used();
+        program.setMat4fv("proj", camera.projection_matrix.as_ptr()).unwrap();
+        program.setMat4fv("view", camera.view_mat().as_ptr()).unwrap();
+        program.setMat4fv("model", self.transform.model_mat().as_ptr()).unwrap();
+
+        program.setMat4fv("model_rot", self.transform.model_rot().as_ptr()).unwrap();
+        program.setMat4fv("view_rot", camera.view_rot().as_ptr()).unwrap();
+        self.material.load_shader_data(res, &program);
+        let mesh = res.get_mesh(self.mesh_key).unwrap();
         mesh.load();
         mesh.bind();
         mesh.draw();
