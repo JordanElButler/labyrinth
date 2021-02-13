@@ -45,7 +45,7 @@ impl Texture {
     }
 
     // TODO: make color format flexible
-    pub fn load_memory(&mut self) {
+    pub fn load_memory(&self) {
         match &self.texture_type {
             TextureType::FramebufferAttachment(_) => {
                 self.bind();
@@ -63,7 +63,7 @@ impl Texture {
             }
         }
     }
-    pub fn set_parameters(&mut self, parameters: Vec<(gl::types::GLenum, gl::types::GLenum)>) {
+    pub fn set_parameters(&self, parameters: Vec<(gl::types::GLenum, gl::types::GLenum)>) {
         self.bind();
         unsafe {
             for i in 0..parameters.len() {

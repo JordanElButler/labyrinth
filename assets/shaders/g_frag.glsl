@@ -11,8 +11,6 @@ in vec3 FragPos;
 in vec3 vNormal;
 in vec2 vST;
 
-uniform sampler2D texture1;
-
 uniform vec3 albedo;
 uniform float metallic;
 uniform float roughness;

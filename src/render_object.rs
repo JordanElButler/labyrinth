@@ -3,73 +3,62 @@ use crate::shader::{Program};
 use crate::mesh::Mesh;
 use crate::camera::PerspectiveCamera;
 use crate::vertex::{Vertex};
-use crate::resources::Resources;
-use crate::light::PointLight;
+use crate::resources::{ResourceKey, Resources};
+use crate::light::Light;
 use crate::material::{MaterialPropertyType, Material};
 
-pub struct RenderObject<'a> {
+pub struct RenderObject {
     pub transform: Transform,
-    pub program_id: &'a str,
-    pub mesh_id: &'a str,
+    pub program_key: ResourceKey,
+    pub mesh_key: ResourceKey,
     pub material: Material,
     pub is_loaded: bool,
 }
 
-impl<'a> RenderObject<'a> {
-    pub fn new(transform: Transform, program_id: &'a str, mesh_id: &'a str, material: Material) -> Self {
+impl RenderObject {
+    pub fn new(res: &mut Resources, transform: Transform, program_name: &str, mesh_name: &str, material: Material) -> Self {
 
         RenderObject {
             transform,
-            program_id,
-            mesh_id,
+            program_key: res.get_program_id_by_name(program_name).unwrap(),
+            mesh_key: res.get_mesh_id_by_name(mesh_name).unwrap(),
             material,
             is_loaded: false,
         }
     }
-
-    pub fn draw(&mut self, resources: &mut Resources, camera: &PerspectiveCamera) {
-        let mut program = resources.get_program(self.program_id).unwrap();
-        program.set_used();
-        program.setMat4fv("proj", camera.projection_matrix.as_ptr()).unwrap();
-        program.setMat4fv("view", camera.view_mat().as_ptr()).unwrap();
-        program.setMat4fv("model", self.transform.model_mat().as_ptr()).unwrap();
-
-        program.setMat4fv("model_rot", self.transform.model_rot().as_ptr()).unwrap();
-        program.setMat4fv("view_rot", camera.view_rot().as_ptr()).unwrap();
-
-        self.material.load_shader_data(&mut program);
-
-        /*
-        let mut texture = resources.get_texture(self.texture_id).unwrap();
-        texture.load_memory();
-        texture.bind();
-        */
-
-        let mut mesh = resources.get_mesh(self.mesh_id).unwrap();
+    pub fn draw(&mut self, res: &mut Resources, camera: &PerspectiveCamera) {
+        self.material.load_shader_data(res, self.program_key, &self.transform, &camera);
+        let mut mesh = res.get_mesh(self.mesh_key).unwrap();
         mesh.load();
         mesh.bind();
-        
         mesh.draw();
         crate::gl_util::gl_dump_errors();
 
     }
 }
-/*
+
 pub struct Scene {
-    objects: Vec::<RenderObject>,
-    lights: Vec::<Light>
+    pub objects: Vec::<RenderObject>,
+    pub lights: Vec::<Light>
 }
 
 impl Scene {
     pub fn new() -> Self {
         Scene {
-            objects: Vec::new()
+            objects: Vec::new(),
+            lights: Vec::new(),
         }
     }
     pub fn add_object(&mut self, obj: RenderObject) {
         self.objects.push(obj);
     }
-    pub fn 
+    pub fn add_light(&mut self, light: Light) {
+        self.lights.push(light);
+    }
+    pub fn get_objects(&self) -> &Vec<RenderObject> {
+        &self.objects
+    }
+    pub fn get_lights(&self) -> &Vec<Light> {
+        &self.lights
+    }
 }
-
-*/

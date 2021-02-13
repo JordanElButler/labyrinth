@@ -1,38 +1,34 @@
 
-use crate::math::Vector3f;
 use crate::transform::Transform;
+use crate::color::Color;
 
-type Color = Vector3f;
+pub enum LightType {
+    PointLight,
+    DirectionalLight,
+}
 
-pub struct PointLight {
+pub struct Light {
+    pub light_type: LightType,
     pub transform: Transform,
     pub color: Color,
     pub power: f32,
 }
 
-impl PointLight {
-    pub fn new(transform: Transform, color: Color, power: f32) -> Self {
-        PointLight {
+impl Light {
+    pub fn new_point_light(transform: Transform, color: Color, power: f32) -> Self {
+        Light {
+            light_type: LightType::PointLight,
             transform,
             color: color,
             power: power,
         }
     }
-
-}
-
-pub struct DirectionalLight {
-    transform: Transform,
-    color: Color,
-    power: f32,
-}
-
-impl DirectionalLight {
-    pub fn new(color: Color, power: f32) -> Self {
-        DirectionalLight {
-            transform: Transform::identity(),
-            color: color,
-            power: power,
+    pub fn new_directional_light(transform: Transform, color: Color, power: f32) -> Self {
+        Light {
+            light_type: LightType::DirectionalLight,
+            transform,
+            color,
+            power,
         }
     }
 }

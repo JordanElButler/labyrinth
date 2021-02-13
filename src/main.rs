@@ -16,6 +16,7 @@ pub mod load_assets;
 pub mod light;
 pub mod framebuffer;
 pub mod material;
+pub mod color;
 
 
 use sdl2::pixels::Color;
@@ -54,10 +55,10 @@ pub fn main() {
 
     use math::{Vector3f, Vector2f};
     use crate::transform::{Transform};
-    use render_object::RenderObject;
+    use render_object::{Scene, RenderObject};
     use crate::material::Material;
 
-    let mut objs: Vec<RenderObject> = Vec::new();
+    let mut scene = Scene::new();
 
     for x in 0..10 {
         for y in 0..10 {
@@ -70,7 +71,7 @@ pub fn main() {
             transform.scale.y = 0.5;
             transform.scale.z = 0.5;
 
-            objs.push( RenderObject::new(
+            scene.add_object( RenderObject::new( &mut resources,
                 transform,
                 "g_program",
                 "sphere",
@@ -82,14 +83,14 @@ pub fn main() {
         }
     }
 
-    use light::PointLight;
-    let mut lights: Vec<PointLight> = Vec::new();
+
+    use light::Light;
     for x in 0..2 {
         for y in 0..2 {
             let mut transform = Transform::identity();
-            transform.translation.x = (4 * (x - 1)) as f32;
-            transform.translation.y = (4 * (y - 1))  as f32;
-            lights.push( PointLight::new(
+            transform.translation.x = (5 * (x - 1)) as f32;
+            transform.translation.y = (5 * (y - 1))  as f32;
+            scene.add_light( Light::new_point_light(
                 transform,
                 Vector3f::new(1.0, 1.0, 1.0),
                 1.0
@@ -149,7 +150,7 @@ pub fn main() {
             gl::ClearColor(0.0, 0.0, 0.0, 1.0);
             my_gb.clear();
             my_gb.set_as_target();
-            for obj in objs.iter_mut() {
+            for obj in scene.objects.iter_mut() {
                 obj.draw(&mut resources, &camera);
             }
  /*          
@@ -168,7 +169,7 @@ pub fn main() {
             gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
             gl::ClearColor(0f32, 0f32, 0f32, 1f32);
             gl::Disable(gl::DEPTH_TEST);
-            let mut lightpass_program = resources.get_program("lightpass_program").unwrap();
+            let mut lightpass_program = resources.get_program_by_name("lightpass_program").unwrap();
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, my_gb.get_position().textureID);
             lightpass_program.set1i("tposition", 0).unwrap();
