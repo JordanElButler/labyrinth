@@ -1,7 +1,7 @@
 use crate::transform::Transform;
 use crate::shader::{Program};
 use crate::mesh::Mesh;
-use crate::camera::PerspectiveCamera;
+use crate::camera::Camera;
 use crate::vertex::{Vertex};
 use crate::resources::{ResourceKey, Resources};
 use crate::light::Light;
@@ -24,10 +24,10 @@ impl RenderObject {
             material,
         }
     }
-    pub fn draw(&self, res: &Resources, camera: &PerspectiveCamera) {
+    pub fn draw(&self, res: &Resources, camera: &Camera) {
         let program = res.get_program(self.program_key).unwrap();
         program.set_used();
-        program.setMat4fv("proj", camera.projection_matrix.as_ptr()).unwrap();
+        program.setMat4fv("proj", camera.proj_mat().as_ptr()).unwrap();
         program.setMat4fv("view", camera.view_mat().as_ptr()).unwrap();
         program.setMat4fv("model", self.transform.model_mat().as_ptr()).unwrap();
 
@@ -66,5 +66,11 @@ impl Scene {
     }
     pub fn get_lights(&self) -> &Vec<Light> {
         &self.lights
+    }
+    pub fn update(&mut self, dt: i32) {
+
+    }
+    pub fn render(&mut self) {
+
     }
 }

@@ -15,6 +15,9 @@ impl Vector2f {
     pub fn zero() -> Vector2f {
         Vector2f::new(0.0, 0.0)
     }
+    pub fn is_zero(&self) -> bool {
+        self.x == 0f32 && self.y == 0f32
+    }
     pub fn copy(&self) -> Vector2f {
         Vector2f::new(self.x, self.y)
     }
@@ -67,6 +70,9 @@ impl Vector3f {
     }
     pub fn zero() -> Vector3f {
         Vector3f::new(0.0, 0.0, 0.0)
+    }
+    pub fn is_zero(&self) -> bool {
+        self.x == 0f32 && self.y == 0f32 && self.z == 0f32
     }
     pub fn copy(&self) -> Vector3f {
         Vector3f::new(self.x, self.y, self.z)

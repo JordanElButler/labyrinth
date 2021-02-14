@@ -1,7 +1,8 @@
+use crate::math::Vector2f;
 
 pub struct InputState {
-    mouse_state: MouseState,
-    key_state: KeyState,
+    pub mouse_state: MouseState,
+    pub key_state: KeyState,
 }
 
 impl InputState {
@@ -19,12 +20,12 @@ impl InputState {
 
 #[derive(Debug)]
 pub struct MouseState {
-    left: bool,
-    right: bool,
-    x: f32,
-    y: f32,
-    px: f32,
-    py: f32,
+    pub left: bool,
+    pub right: bool,
+    pub x: f32,
+    pub y: f32,
+    pub px: f32,
+    pub py: f32,
 }
 
 impl MouseState {
@@ -63,6 +64,14 @@ impl MouseState {
             _ => ()
         }
     }
+    pub fn movement(&self) -> bool {
+        self.px != self.x && self.py != self.y
+    }
+    pub fn get_direction_normal(&self) -> Vector2f {
+        let mut v = Vector2f::new(self.x - self.px, self.y - self.py);
+        v.normalize();
+        v
+    }
 }
 
 use std::collections::HashSet;
@@ -88,5 +97,8 @@ impl KeyState {
             },
             _ => ()
         }
+    }
+    pub fn key_down(&self, key: &sdl2::keyboard::Keycode) -> bool {
+        self.key_map.contains(&key)
     }
 }

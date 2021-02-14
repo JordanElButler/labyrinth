@@ -5,20 +5,32 @@
 use crate::math::{Mat4f};
 use crate::transform::{Transform};
 
-pub struct PerspectiveCamera {
-    pub transform: Transform,
-    pub projection_matrix: Mat4f, 
+pub enum CameraType {
+    PerspectiveCamera{ projection_matrix: Mat4f },
+    OrthographicCamera,
 }
 
-impl PerspectiveCamera {
-    pub fn new(fov: f32, aspect_ratio: f32, near: f32, far: f32) -> Self {
+pub struct Camera {
+    pub transform: Transform,
+    camera_type: CameraType,
+}
 
-        PerspectiveCamera {
+impl Camera {
+    pub fn new_perspective_camera(fov: f32, aspect_ratio: f32, near: f32, far: f32) -> Self {
+
+        Camera {
             transform: Transform::identity(),
-            projection_matrix: make_projection_matrix(fov, aspect_ratio, near, far),
+            camera_type: CameraType::PerspectiveCamera{ projection_matrix: make_projection_matrix(fov, aspect_ratio, near, far) },
         }
     }
-    
+    pub fn proj_mat(&self) -> &Mat4f {
+        match &self.camera_type {
+            CameraType::PerspectiveCamera{ projection_matrix: mat} => {
+                mat
+            },
+            _ => panic!("Not a perspective camera")
+        }
+    }
     pub fn view_mat(&self) -> Mat4f {
         self.transform.inverse_mat()
     }
@@ -46,7 +58,9 @@ impl PerspectiveCamera {
 
         Mat4f::mult(&x_rot, &Mat4f::mult(&y_rot, &z_rot))
     }
+    
 }
+
 
 pub fn make_projection_matrix(fov: f32, aspect_ratio: f32, n: f32, f: f32) -> Mat4f {
 // copied from https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix

@@ -14,7 +14,6 @@ pub enum Error {
 pub struct Framebuffer {
     id: gl::types::GLuint,
     tex_attachments: HashMap<gl::types::GLenum, Texture>,
-    bound: bool,
 }
 
 impl Framebuffer {
@@ -27,18 +26,15 @@ impl Framebuffer {
         Framebuffer {
             id: id,
             tex_attachments: HashMap::new(),
-            bound: false,
         }
     }
 
-    pub fn bind(&mut self) {
-        self.bound = true;
+    pub fn bind(&self) {
         unsafe {
             gl::BindFramebuffer(gl::FRAMEBUFFER, self.id);
         }
     }
-    pub fn unbind(&mut self) {
-        self.bound = false;
+    pub fn unbind(&self) {
         unsafe {
             gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
         }
@@ -103,7 +99,7 @@ impl GBuffer {
             ], dimensions)
         }
     }
-    pub fn set_as_target(&mut self) {
+    pub fn set_as_target(&self) {
         self.fb.bind();
         unsafe {
 
@@ -111,7 +107,7 @@ impl GBuffer {
             gl::DrawBuffers(6, &[gl::COLOR_ATTACHMENT0, gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3, gl::COLOR_ATTACHMENT4, gl::COLOR_ATTACHMENT5] as *const gl::types::GLenum);
         }
     }
-    pub fn clear(&mut self) {
+    pub fn clear(&self) {
         self.fb.bind();
         unsafe {
             gl::ClearColor(0f32, 0f32, 0f32, 1f32);
