@@ -106,7 +106,7 @@ impl GameState {
     }
     pub fn fixed_update(&mut self, manager: &Manager) {
         //self.scene.update(&manager, fixed_time_slice);
-
+    
         let mut move_vector = Vector3f::new(0f32, 0f32, 0f32);
         let input = manager.get_input();
         if input.key_state.key_down(&Keycode::A) {
@@ -120,21 +120,26 @@ impl GameState {
         } else if input.key_state.key_down(&Keycode::S) {
             move_vector.z -= 1f32;
         }
+        if input.key_state.key_down(&Keycode::R) {
+            move_vector.y += 1f32;
+        } else if input.key_state.key_down(&Keycode::F) {
+            move_vector.y -= 1f32;
+        }
         if !move_vector.is_zero() {
-            move_vector.scale(0.001 * self.fixed_time_slice as f32);
+            move_vector.scale(0.01 * self.fixed_time_slice as f32);
         }
         self.camera.transform.translation.add_to(&move_vector);
 
         if input.mouse_state.left {
-            println!("left mouse button down");
+            println!("{:?}\n{}", input.mouse_state, input.mouse_state.movement());
         }
         if input.mouse_state.right {
             println!("right mouse button down");
         }
         if input.mouse_state.movement() {
             let mv = input.mouse_state.get_direction_normal();
-            self.camera.transform.rotation.y -= mv.x * 0.001 * self.fixed_time_slice as f32;
-            self.camera.transform.rotation.x += mv.y * 0.001 * self.fixed_time_slice as f32;
+            self.camera.transform.rotation.y -= mv.x * 0.005 * self.fixed_time_slice as f32;
+            self.camera.transform.rotation.x += mv.y * 0.005 * self.fixed_time_slice as f32;
             if self.camera.transform.rotation.x > std::f32::consts::FRAC_PI_2 {
                 self.camera.transform.rotation.x = std::f32::consts::FRAC_PI_2;
             } else if self.camera.transform.rotation.x < -std::f32::consts::FRAC_PI_2 {
@@ -149,6 +154,7 @@ impl GameState {
 
 pub struct GameApp {
     game_state: GameState,
+    sdl_context: sdl2::Sdl,
     window: Window,
     window_width: i32,
     window_height: i32,
@@ -175,9 +181,11 @@ impl GameApp {
             .build()
             .unwrap();
     
+
         let gl_context = window.gl_create_context().unwrap();
         let gl = gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as *const std::os::raw::c_void);
     
+        sdl_context.mouse().show_cursor(false);
         let mut event_pump = sdl_context.event_pump().unwrap();
     
         let manager = Manager::new();
@@ -186,6 +194,7 @@ impl GameApp {
 
         GameApp {
             game_state: GameState::new(manager.get_res(), window_width, window_height),
+            sdl_context,
             window,
             window_width: window_width as i32,
             window_height: window_height as i32,
@@ -209,11 +218,15 @@ impl GameApp {
                     }
                 }
             }
+
             self.manager.timer.update();
             self.update();
             self.render();
             crate::gl_util::gl_dump_errors();
             self.window.gl_swap_window();
+            self.sdl_context.mouse().warp_mouse_in_window(&self.window, self.window_width/2, self.window_height/2);
+            self.manager.input.mouse_state.x = self.window_width as f32/2f32;
+            self.manager.input.mouse_state.y = self.window_height as f32/2f32;
         }
     }
     pub fn start(&mut self) {
