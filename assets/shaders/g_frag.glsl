@@ -11,6 +11,9 @@ in vec3 FragPos;
 in vec3 vNormal;
 in vec2 vST;
 
+uniform mat4 model_rot;
+uniform mat4 view_rot;
+
 uniform vec3 albedo;
 uniform float metallic;
 uniform float roughness;

@@ -27,4 +27,7 @@ impl Mesh {
     pub fn draw(&self) {
         self.vertex.draw_call();
     }
+    pub fn instanced_draw(&self, num: i32) {
+        self.vertex.instanced_draw_call(num);
+    }
 }

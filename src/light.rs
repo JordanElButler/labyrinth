@@ -32,4 +32,10 @@ impl Light {
             power,
         }
     }
+    pub fn get_position(&self) -> &Vector3f {
+        &self.transform.translation
+    }
+    pub fn get_color(&self) -> &Vector3f {
+        &self.color
+    }
 }

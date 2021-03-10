@@ -20,6 +20,7 @@ pub mod renderer;
 pub mod game;
 pub mod managers;
 pub mod game_objects;
+pub mod boundaries;
 
 pub fn main() {
     let mut game_app = game::GameApp::new();

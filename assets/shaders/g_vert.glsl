@@ -24,7 +24,8 @@ uniform mat4 view_rot;
 void main() {
     gl_Position = proj * view * model * vec4(aPosition, 1.0);
     FragPos = vec3(model * vec4(aPosition, 1.0));
-    vec3 dumbNormal = normalize(view_rot * model_rot * vec4(aNormal, 1.0)).xyz;
-    vNormal = dumbNormal; ///////////// CALCULATE CORRECT SCREEENSPACE NORMALS
+    vNormal = aNormal;
+    vec3 dumbNormal = normalize( model_rot * vec4(aNormal, 1.0)).xyz;
+    vNormal = dumbNormal; // world space normals get interpolated correctly, maybee???
     vST = aST;
 }

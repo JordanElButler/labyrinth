@@ -32,7 +32,6 @@ impl RenderObject {
         program.setMat4fv("model", self.transform.model_mat().as_ptr()).unwrap();
 
         program.setMat4fv("model_rot", self.transform.model_rot().as_ptr()).unwrap();
-        program.setMat4fv("view_rot", camera.view_rot().as_ptr()).unwrap();
         self.material.load_shader_data(res, &program);
         let mesh = res.get_mesh(self.mesh_key).unwrap();
         mesh.load();
@@ -43,34 +42,44 @@ impl RenderObject {
     }
 }
 
-pub struct Scene {
-    pub objects: Vec::<RenderObject>,
-    pub lights: Vec::<Light>
+// dumb experiment with instancing
+pub struct TerrainChunkObject {
+    pub transform: Transform,
+    pub program_key: ResourceKey,
+    pub mesh_key: ResourceKey,
+    pub material: Material,
 }
 
-impl Scene {
-    pub fn new() -> Self {
-        Scene {
-            objects: Vec::new(),
-            lights: Vec::new(),
+impl TerrainChunkObject {
+    pub fn new(res: &Resources, transform: Transform, program_name: &str, mesh_name: &str, material: Material) -> Self {
+
+        TerrainChunkObject {
+            transform,
+            program_key: res.get_program_id_by_name(program_name).unwrap(),
+            mesh_key: res.get_mesh_id_by_name(mesh_name).unwrap(),
+            material,
         }
     }
-    pub fn add_object(&mut self, obj: RenderObject) {
-        self.objects.push(obj);
-    }
-    pub fn add_light(&mut self, light: Light) {
-        self.lights.push(light);
-    }
-    pub fn get_objects(&self) -> &Vec<RenderObject> {
-        &self.objects
-    }
-    pub fn get_lights(&self) -> &Vec<Light> {
-        &self.lights
-    }
-    pub fn update(&mut self, dt: i32) {
+    pub fn draw(&self, res: &Resources, camera: &Camera) {
+        let program = res.get_program(self.program_key).unwrap();
+        program.set_used();
+        program.setMat4fv("proj", camera.proj_mat().as_ptr()).unwrap();
+        program.setMat4fv("view", camera.view_mat().as_ptr()).unwrap();
+        program.setMat4fv("model", self.transform.model_mat().as_ptr()).unwrap();
 
-    }
-    pub fn render(&mut self) {
+        program.setMat4fv("model_rot", self.transform.model_rot().as_ptr()).unwrap();
+        program.setMat4fv("view_rot", camera.view_rot().as_ptr()).unwrap();
+
+        let numX = 100;
+        let numZ = 500;
+        program.set1i("numX", numX);
+        program.set1i("numZ", numZ);
+        self.material.load_shader_data(res, &program);
+        let mesh = res.get_mesh(self.mesh_key).unwrap();
+        mesh.load();
+        mesh.bind();
+        mesh.instanced_draw(numX * numZ);
+        crate::gl_util::gl_dump_errors();
 
     }
 }

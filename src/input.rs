@@ -40,12 +40,14 @@ impl MouseState {
         }
     }
     pub fn update(&mut self, event: &sdl2::event::Event) {
+        self.px = self.x;
+        self.py = self.y;
+        self.x = 0f32;
+        self.y = 0f32;
         match event {
-            sdl2::event::Event::MouseMotion{x, y, ..} => {
-                self.px = self.x;
-                self.py = self.y;
-                self.x = *x as f32;
-                self.y = *y as f32;
+            sdl2::event::Event::MouseMotion{xrel, yrel, ..} => {
+                self.x = *xrel as f32;
+                self.y = *yrel as f32;
             },
             sdl2::event::Event::MouseButtonDown{mouse_btn, ..} => {
                 match mouse_btn {
@@ -65,11 +67,10 @@ impl MouseState {
         }
     }
     pub fn movement(&self) -> bool {
-        self.px != self.x && self.py != self.y
+        0f32 != self.x && 0f32 != self.y
     }
     pub fn get_direction_normal(&self) -> Vector2f {
-        let mut v = Vector2f::new(self.x - self.px, self.y - self.py);
-        v.normalize();
+        let mut v = Vector2f::new(self.x, self.y);
         v
     }
 }

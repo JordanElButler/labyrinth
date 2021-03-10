@@ -146,6 +146,14 @@ impl Vertex {
             gl::DrawElements(gl::TRIANGLES, self.indices.len() as gl::types::GLsizei, gl::UNSIGNED_INT, 0 as *const gl::types::GLvoid);
         }
     }
+    pub fn instanced_draw_call(&self, num: i32) {
+        self.vertex_array.bind();
+        self.index_buffer.bind();
+
+        unsafe {
+            gl::DrawElementsInstanced(gl::TRIANGLES, self.indices.len() as gl::types::GLsizei, gl:: UNSIGNED_INT, 0 as *const gl::types::GLvoid, num);
+        }
+    }
 }
 
 impl Drop for Vertex {

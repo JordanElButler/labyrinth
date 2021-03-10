@@ -8,10 +8,6 @@ uniform vec2 iResolution;
 uniform vec4 iMouse;
 uniform float iTimeDelta;
 
-uniform sampler2D albedo;
-uniform sampler2D normal;
-uniform sampler2D specular;
-uniform sampler2D depth;
 uniform sampler2D my_texture;
 
 void main() {

@@ -2,6 +2,10 @@
 out vec4 FragColor;
 in vec2 vST;
 
+/*
+modified from 
+https://learnopengl.com/PBR/Lighting
+*/
 // material parameters
 uniform sampler2D tposition;
 uniform sampler2D tnormal;
@@ -104,8 +108,8 @@ void main()
     vec3 ambient = vec3(0.03) * albedo * ao;
     vec3 color = ambient + Lo;
 	
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));  
+    //color = color / (color + vec3(1.0));
+    //color = pow(color, vec3(1.0/2.2));  
    
     FragColor = vec4(color, 1.0);
 }  

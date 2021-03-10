@@ -63,10 +63,6 @@ impl Framebuffer {
 
 
         }
-
-        unsafe {
-            println!("{:?} on {}", gl::CheckFramebufferStatus(gl::FRAMEBUFFER), std::line!());
-        }
         fb.unbind();
 
         fb

@@ -5,7 +5,12 @@ use std::path::{Path};
 
 pub fn load_assets(resources: &mut Resources) {
     let resource_path = from_relative_exe_path(Path::new("assets")).unwrap();
-
+    {
+        let vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/flat_vert.glsl").unwrap()).unwrap();
+        let frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/flat_frag.glsl").unwrap()).unwrap();
+        let program = Program::from_shaders(&vert_shader, &frag_shader).unwrap();
+        resources.add_program_by_name("flat_program", program).unwrap();
+    }
     {
         let obj_vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/textured_vert.glsl").unwrap()).unwrap();
         let obj_frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/textured_frag.glsl").unwrap()).unwrap();
@@ -27,7 +32,12 @@ pub fn load_assets(resources: &mut Resources) {
         let obj_program = Program::from_shaders(&obj_vert_shader, &obj_frag_shader).unwrap();
         resources.add_program_by_name("g_program", obj_program).unwrap();
     }
-
+    {
+        let vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/g_terrain_vert.glsl").unwrap()).unwrap();
+        let frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/g_terrain_frag.glsl").unwrap()).unwrap();
+        let quad_program = Program::from_shaders(&vert_shader, &frag_shader).unwrap();
+        resources.add_program_by_name("g_terrain_program", quad_program).unwrap();
+    }
     {
         let obj_vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/g_tex_vert.glsl").unwrap()).unwrap();
         let obj_frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/g_tex_frag.glsl").unwrap()).unwrap();
@@ -48,12 +58,27 @@ pub fn load_assets(resources: &mut Resources) {
         let quad_program = Program::from_shaders(&quad_vert_shader, &quad_frag_shader).unwrap();
         resources.add_program_by_name("quad_program", quad_program).unwrap();
     }
-    
+    {
+        let vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/tone_map_vert.glsl").unwrap()).unwrap();
+        let frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/tone_map_frag.glsl").unwrap()).unwrap();
+        let program = Program::from_shaders(&vert_shader, &frag_shader).unwrap();
+        resources.add_program_by_name("tone_map_program", program).unwrap();
+    }
+    {
+        let vert_shader = Shader::from_vert_source(&load_cstring(&resource_path, "shaders/hud_vert.glsl").unwrap()).unwrap();
+        let frag_shader = Shader::from_frag_source(&load_cstring(&resource_path, "shaders/hud_frag.glsl").unwrap()).unwrap();
+        let program = Program::from_shaders(&vert_shader, &frag_shader).unwrap();
+        resources.add_program_by_name("hud_program", program).unwrap();
+    }
     {
         let labyrinth_mesh = load_ply(&resource_path, "meshes/labyrinth.ply").unwrap();
         resources.add_mesh_by_name("lab", labyrinth_mesh).unwrap();
         let sphere_mesh = load_ply(&resource_path, "meshes/sphere.ply").unwrap();
         resources.add_mesh_by_name("sphere", sphere_mesh).unwrap();
+        let cube_mesh = load_ply(&resource_path, "meshes/cube.ply").unwrap();
+        resources.add_mesh_by_name("cube", cube_mesh).unwrap();
+        let gun_mesh = load_ply(&resource_path, "meshes/gun.ply").unwrap();
+        resources.add_mesh_by_name("gun", gun_mesh).unwrap();
     }
 
     {

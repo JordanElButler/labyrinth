@@ -167,6 +167,18 @@ impl Program {
         }
         Some(())
     }
+    pub fn set2f(&self, name: &str, x: f32, y: f32) -> Option<()> {
+        unsafe {
+            let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);
+            if loc_u == -1 {
+                return Option::None;
+            } else {
+                self.set_used();
+                gl::Uniform2f(loc_u, x, y);
+            }
+        }
+        Some(())
+    }
     pub fn set3f(&self, name: &str, x: f32, y: f32, z: f32) -> Option<()> {
         unsafe {
             let loc_u = gl::GetUniformLocation(self.id, std::ffi::CString::new(name).unwrap().as_ptr() as *const gl::types::GLchar);

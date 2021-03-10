@@ -19,5 +19,8 @@ version = "=0.34.2"
 [dependencies.image]
 version = "0.23.12"
 
+[dependencies.simdnoise]
+version = "3.1.6"
+
 [build-dependencies]
 walkdir = "2.1"
