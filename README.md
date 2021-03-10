@@ -1,4 +1,4 @@
 # labyrinth
-[!image](spheres.png)
+![image](./spheres.png)
 
 game in rust and opengl
